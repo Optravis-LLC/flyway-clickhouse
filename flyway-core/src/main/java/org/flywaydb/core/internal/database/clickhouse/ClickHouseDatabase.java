@@ -117,11 +117,6 @@ public class ClickHouseDatabase extends Database<ClickHouseConnection> {
     }
 
     @Override
-    public boolean supportsChangingCurrentSchema() {
-        return true;
-    }
-
-    @Override
     public String getBooleanTrue() {
         return "1";
     }
