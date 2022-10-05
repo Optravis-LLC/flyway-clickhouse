@@ -120,7 +120,7 @@
         <version.ant>1.9.14</version.ant>
         <version.aws-java-sdk>2.17.189</version.aws-java-sdk>
         <version.aws-secretsmanager>1.0.8</version.aws-secretsmanager>
-        <version.clickhouse-jdbc>0.3.0</version.clickhouse-jdbc>
+        <version.clickhouse-jdbc>0.3.2-patch11</version.clickhouse-jdbc>
         <version.commonslogging>1.2</version.commonslogging>
         <version.commonstext>1.9</version.commonstext>
         <version.db2>11.5.0.0</version.db2>
@@ -433,7 +433,7 @@
                 <optional>true</optional>
             </dependency>
             <dependency>
-                <groupId>ru.yandex.clickhouse</groupId>
+                <groupId>com.clickhouse</groupId>
                 <artifactId>clickhouse-jdbc</artifactId>
                 <version>${version.clickhouse-jdbc}</version>
                 <optional>true</optional>
