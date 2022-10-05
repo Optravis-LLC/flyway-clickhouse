@@ -42,16 +42,9 @@
         </license>
     </licenses>
     <scm>
-
         <url>https://github.com/flyway/flyway</url>
         <connection>scm:git:${env.FLYWAY_REPO_URL}</connection>
         <developerConnection>scm:git:${env.FLYWAY_REPO_URL}</developerConnection>
-
-
-
-
-
-
         <tag>HEAD</tag>
     </scm>
     <developers>
@@ -73,24 +66,6 @@
         <module>flyway-gcp-spanner</module>
         <module>flyway-sqlserver</module>
         <module>flyway-mysql</module>
-        <module>flyway-firebird</module>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     </modules>
 
     <distributionManagement>
@@ -107,13 +82,6 @@
     </distributionManagement>
 
     <repositories>
-
-
-
-
-
-
-
         <repository>
             <id>maven-central</id>
             <url>https://repo1.maven.org/maven2</url>
@@ -127,12 +95,32 @@
             <id>flyway-repo</id>
             <url>https://nexus.flywaydb.org/repository/flyway/</url>
         </repository>
+        <repository>
+            <id>maven.oracle.com</id>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <url>https://maven.oracle.com</url>
+             <layout>default</layout>
+        </repository>
+
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven.oracle.com</id>
+            <url>https://maven.oracle.com</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <properties>
         <version.ant>1.9.14</version.ant>
         <version.aws-java-sdk>2.17.189</version.aws-java-sdk>
         <version.aws-secretsmanager>1.0.8</version.aws-secretsmanager>
+        <version.clickhouse-jdbc>0.3.0</version.clickhouse-jdbc>
         <version.commonslogging>1.2</version.commonslogging>
         <version.commonstext>1.9</version.commonstext>
         <version.db2>11.5.0.0</version.db2>
@@ -166,6 +154,7 @@
         <version.mssql>10.2.0</version.mssql>
         <version.mssql-jdbc>${version.mssql}.jre8</version.mssql-jdbc>
         <version.night-config>3.6.6</version.night-config>
+        <version.mysql>8.0.24</version.mysql>
         <version.oracle>19.6.0.0</version.oracle>
         <version.osgi>4.3.1</version.osgi>
         <version.p6spy>3.9.1</version.p6spy>
@@ -178,6 +167,7 @@
         <version.springjdbc>5.3.19</version.springjdbc>
         <version.sqlite>3.34.0</version.sqlite>
         <version.testcontainers>1.15.3</version.testcontainers>
+        <zookeeper.version>3.5.8</zookeeper.version>
     </properties>
 
     <dependencyManagement>
@@ -344,7 +334,19 @@
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
+                <artifactId>clickhouse</artifactId>
+                <version>${version.testcontainers}</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
                 <artifactId>mariadb</artifactId>
+                <version>${version.testcontainers}</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>mysql</artifactId>
                 <version>${version.testcontainers}</version>
                 <optional>true</optional>
             </dependency>
@@ -395,67 +397,6 @@
                 <version>${version.informix}</version>
                 <optional>true</optional>
             </dependency>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             <dependency>
                 <groupId>com.microsoft.sqlserver</groupId>
                 <artifactId>mssql-jdbc</artifactId>
@@ -489,6 +430,31 @@
                 <groupId>com.amazonaws.secretsmanager</groupId>
                 <artifactId>aws-secretsmanager-jdbc</artifactId>
                 <version>${version.aws-secretsmanager}</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>ru.yandex.clickhouse</groupId>
+                <artifactId>clickhouse-jdbc</artifactId>
+                <version>${version.clickhouse-jdbc}</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zookeeper.version}</version>
+            </dependency>
+            <!-- Override transitive dependencies within SecretsManager to deal with high priority CVEs. These
+             two can be removed when SecretsManager moves on from 1.0.6 -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.10.5.1</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-cbor</artifactId>
+                <version>2.12.1</version>
                 <optional>true</optional>
             </dependency>
             <dependency>
@@ -541,19 +507,6 @@
     </dependencyManagement>
 
     <build>
-        <extensions>
-            <extension>
-                <groupId>com.allogy.maven.wagon</groupId>
-                <artifactId>maven-s3-wagon</artifactId>
-                <version>1.2.0</version>
-            </extension>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-http</artifactId>
-                <version>2.12</version>
-            </extension>
-        </extensions>
-
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -726,499 +679,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <configuration>
@@ -1263,23 +723,6 @@
     </reporting>
 
     <profiles>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         <profile>
             <id>release-sign-artifacts</id>
             <activation>

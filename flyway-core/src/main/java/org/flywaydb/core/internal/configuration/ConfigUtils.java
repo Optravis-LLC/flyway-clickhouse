@@ -103,6 +103,10 @@ public class ConfigUtils {
     public static final String ORACLE_KERBEROS_CACHE_FILE = "flyway.oracle.kerberosCacheFile";
     public static final String ORACLE_WALLET_LOCATION = "flyway.oracle.walletLocation";
 
+    // Clickhouse specific
+    public static final String CLICKHOUSE_CLUSTER_NAME = "flyway.clickhouse.clusterName";
+    public static final String ZOOKEEPER_URL = "flyway.zookeeper.url";
+
     // Command-line specific
     public static final String JAR_DIRS = "flyway.jarDirs";
 
@@ -328,6 +332,14 @@ public class ConfigUtils {
             return ORACLE_WALLET_LOCATION;
         }
 
+        // Clickhouse specific
+        if ("FLYWAY_CLICKHOUSE_CLUSTER_NAME".equals(key)) {
+            return CLICKHOUSE_CLUSTER_NAME;
+        }
+        if ("FLYWAY_ZOOKEEPER_URL".equals(key)) {
+            return ZOOKEEPER_URL;
+        }
+
         // Command-line specific
         if ("FLYWAY_JAR_DIRS".equals(key)) {
             return JAR_DIRS;
@@ -359,9 +371,13 @@ public class ConfigUtils {
      */
     public static Map<String, String> loadDefaultConfigurationFiles(File installationDir, String encoding) {
         Map<String, String> configMap = new HashMap<>();
-        configMap.putAll(ConfigUtils.loadConfigurationFile(new File(installationDir.getAbsolutePath() + "/conf/" + ConfigUtils.CONFIG_FILE_NAME), encoding, false));
+        configMap.putAll(ConfigUtils.loadConfigurationFile(
+                new File(installationDir.getAbsolutePath() + "/conf/" + ConfigUtils.CONFIG_FILE_NAME), encoding,
+                false));
         configMap.putAll(TomlUtils.loadConfigurationFile(new File(installationDir.getAbsolutePath() + "/conf/flyway.toml"), encoding));
-        configMap.putAll(ConfigUtils.loadConfigurationFile(new File(System.getProperty("user.home") + "/" + ConfigUtils.CONFIG_FILE_NAME), encoding, false));
+        configMap.putAll(ConfigUtils
+                .loadConfigurationFile(new File(System.getProperty("user.home") + "/" + ConfigUtils.CONFIG_FILE_NAME),
+                        encoding, false));
         configMap.putAll(ConfigUtils.loadConfigurationFile(new File(ConfigUtils.CONFIG_FILE_NAME), encoding, false));
 
         return configMap;
@@ -376,7 +392,8 @@ public class ConfigUtils {
      * @return The properties from the configuration file. An empty Map if none.
      * @throws FlywayException When the configuration file could not be loaded.
      */
-    public static Map<String, String> loadConfigurationFile(File configFile, String encoding, boolean failIfMissing) throws FlywayException {
+    public static Map<String, String> loadConfigurationFile(File configFile, String encoding, boolean failIfMissing)
+            throws FlywayException {
         String errorMessage = "Unable to load config file: " + configFile.getAbsolutePath();
 
         if ("-".equals(configFile.getName())) {
@@ -493,6 +510,7 @@ public class ConfigUtils {
         return propertiesToMap(properties);
     }
 
+
     static String expandEnvironmentVariables(String value, Map<String, String> environmentVariables) {
         Pattern pattern = Pattern.compile("\\$\\{([A-Za-z0-9_]+)}");
         Matcher matcher = pattern.matcher(value);
@@ -503,7 +521,8 @@ public class ConfigUtils {
             String variableValue = environmentVariables.getOrDefault(variableName, "");
 
             LOG.debug("Expanding environment variable in config: " + variableName + " -> " + variableValue);
-            expandedValue = expandedValue.replaceAll(Pattern.quote(matcher.group(0)), Matcher.quoteReplacement(variableValue));
+            expandedValue =
+                    expandedValue.replaceAll(Pattern.quote(matcher.group(0)), Matcher.quoteReplacement(variableValue));
         }
 
         return expandedValue;

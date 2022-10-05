@@ -247,6 +247,17 @@ public class ClassicConfiguration implements Configuration {
      * @param baselineOnMigrate {@code true} if baseline should be called on migrate for non-empty schemas, {@code false} if not. (default: {@code false})
      */
     private boolean baselineOnMigrate;
+
+    /**
+     * For usage with more then one replic into the Clickhouse DB
+     */
+    private String clickhouseClusterName;
+
+    /**
+     * For distributed locks on zookeeper
+     */
+    private String zookeeperUrl;
+
     /**
      * -- SETTER --
      * Allows migrations to be run "out of order".
@@ -359,6 +370,16 @@ public class ClassicConfiguration implements Configuration {
     @Override
     public DataSource getDataSource() {
         return dataSource;
+    }
+
+    @Override
+    public String getClickhouseClusterName() {
+        return clickhouseClusterName;
+    }
+
+    @Override
+    public String getZookeeperUrl() {
+        return zookeeperUrl;
     }
 
     @Override
@@ -494,8 +515,6 @@ public class ClassicConfiguration implements Configuration {
     public void setErrorOverrides(String... errorOverrides) {
 
         throw new org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException("errorOverrides");
-
-
 
 
     }
@@ -674,8 +693,6 @@ public class ClassicConfiguration implements Configuration {
 
 
 
-
-
     }
 
     /**
@@ -687,12 +704,6 @@ public class ClassicConfiguration implements Configuration {
     public void setCherryPick(String... cherryPickAsString) {
 
         throw new org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException("cherryPick");
-
-
-
-
-
-
 
 
     }
